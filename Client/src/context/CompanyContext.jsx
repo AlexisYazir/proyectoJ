@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { createMisionVisionRequest } from "../api/company";
+import PropTypes from 'prop-types';
 
 const CompanyContext = createContext();
 
@@ -14,7 +15,7 @@ export const useCompany = () => {
 
 
 export function CompanyProvider({ children }) {
-    const [companys, setCompanys] = useState([]);
+    const [companys] = useState([]);
     const [errors, setErrors] = useState([]);
 
     const createMisionVision = async (companyData) => {
@@ -40,3 +41,7 @@ export function CompanyProvider({ children }) {
         </CompanyContext.Provider>
     );
 }
+
+CompanyProvider.propTypes = {
+    children: PropTypes.node, // `node` acepta cualquier cosa que pueda ser renderizada en React
+};

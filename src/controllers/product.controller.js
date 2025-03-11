@@ -17,25 +17,28 @@ export const getProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id)
 
-        if (!product) return res.status(404).json({ message: "Producto no encontrado" });
+        if (!product) return res.status(404).json(["Producto no encontrado"]);
 
         res.json(product);
     } catch (error) {
-        return res.status(500).json({ message: "Ocurrió un error al obtener el producto" });
+        return res.status(500).json( ["Ocurrió un error al obtener el producto." ]);
     }
 };
 
 // Crear un nuevo producto en la base de datos
 export const createProduct = async (req, res) => {
     try {
-        const { nombre_producto, descripcion, precio, categoria, marca, stock, imagen } = req.body;
+        const { nombre_producto, descripcion, precio, categoria, marca, stock, imagen1, imagen2, imagen3 } = req.body;
 
         const productFound = await Product.findOne({ nombre_producto });
         console.log(nombre_producto);
         if(productFound) return res.status(400).json(["Ya hay un producto con ese nombre"]);
-        if(precio <0) return res.status(500).json({message:"El precio debe ser un número positivo"});
-        if(stock <0) return res.status(500).json({message:"El stock debe ser un número positivo"});
+        if(precio <0) return res.status(500).json(["El precio debe ser un número positivo"]);
+        if(stock <0) return res.status(500).json(["El stock debe ser un número positivo"]);
 
+        const imagenes = [imagen1, imagen2, imagen3];
+
+        // Crear el nuevo producto
         const newProduct = new Product({
             nombre_producto,
             descripcion,
@@ -43,17 +46,44 @@ export const createProduct = async (req, res) => {
             categoria,
             marca,
             stock,
-            imagen,
+            imagenes, // Guardamos las imágenes como array
         });
-
         const savedProduct = await newProduct.save();
         res.status(201).json(savedProduct);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message:error.message});
+        // res.status(500).json({ message:error.message});
+        return res.status(500).json(["Ocurrio un error al guardar el producto. Por favor intente nuevamente"]);
     }
 };
 
+// Actualizar un producto por ID
+export const updateProduct = async (req, res) => {
+    try {
+        const { precio, stock, imagen1, imagen2, imagen3 } = req.body;
+
+        // Validaciones
+        if (precio <= 0) return res.status(400).json(["El precio debe ser un número positivo"]);
+        if (stock <= 0) return res.status(400).json(["El stock debe ser un número positivo"]);
+
+        // Crear un array con las imágenes
+        const imagenes = [imagen1, imagen2, imagen3].filter(Boolean); // Filtra valores nulos o undefined
+
+        // Actualizar el producto
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            { ...req.body, imagenes }, // Combina el resto del cuerpo con el array de imágenes
+            { new: true } // Devuelve el producto actualizado
+        );
+
+        if (!product) return res.status(404).json(["Producto no encontrado"]);
+
+        res.json(product);
+    } catch (error) {
+        console.error(error); // Para depuración
+        return res.status(500).json(["Ocurrió un error al actualizar el producto"]);
+    }
+};
 // Eliminar un producto por ID
 export const deleteProduct = async (req, res) => {
     try {
@@ -67,20 +97,7 @@ export const deleteProduct = async (req, res) => {
     }
 };
 
-// Actualizar un producto por ID
-export const updateProduct = async (req, res) => {
-    try {
-        const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-            new: true // Devuelve el producto actualizado
-        });
 
-        if (!product) return res.status(404).json({ message: "Producto no encontrado" });
-
-        res.json(product);
-    } catch (error) {
-        return res.status(500).json({ message: "Ocurrió un error al actualizar el producto" });
-    }
-};
 
 export const getMarcas = async (req, res) => {
     try {

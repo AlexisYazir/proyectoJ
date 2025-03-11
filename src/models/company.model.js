@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MissionVisionSchema = new mongoose.Schema({
+const CompanySchema = new mongoose.Schema({
     mision: {
       type: String,
       required: true,
@@ -9,11 +9,14 @@ const MissionVisionSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+    acerca_de: {
+      type: String,
+      required: false,
+    },
     date: {
-      type: Date,  // Asegúrate de que sea tipo Date
-      required: false, // No es obligatorio si es opcional
+      type: Date,
+      required: false,
     }
-  });
-  
+});
 
-export default mongoose.model('MisionVision', MissionVisionSchema);
+export default mongoose.model('Empresa', CompanySchema);

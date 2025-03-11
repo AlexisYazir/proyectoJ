@@ -25,19 +25,7 @@ export const createProductSchema = z.object({
         z.number().int('El stock debe ser un número entero').min(0, 'El stock no puede ser negativo')
     ),
 
-    imagen: z.string()
-        .url('La imagen debe ser una URL válida ESQUEMA'),
-
-    // proveedor: z.array(
-    //     z.object({
-    //         nombre_proveedor: z.string()
-    //             .min(2, 'El nombre del proveedor debe tener al menos 2 caracteres'),
-
-    //         telefono: z.string()
-    //             .regex(/^\d{10}$/, 'El teléfono debe contener 10 dígitos'),
-
-    //         correo: z.string()
-    //             .email('Debe ser un correo válido'),
-    //     })
-    // ).nonempty('Debe haber al menos un proveedor')
+    imagenes: z.array(z.string()) // Validación para un array de strings
+        .max(3, 'No puede haber más de 3 imágenes') // Si necesitas limitar el número de imágenes
+        .optional() // Hacer que sea opcional en caso de que no se envíen imágenes
 });

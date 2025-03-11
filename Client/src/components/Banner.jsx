@@ -19,7 +19,7 @@ export const Banner = () => {
                         </Link>
                     </div>
                     <div className="col-lg-6 text-center">
-                        <img src="../../public/img-baner.webp"
+                        <img src="/img-baner.webp"
                             alt="Perrito feliz"
                             className="pet-image" />
                     </div>

@@ -14,16 +14,16 @@ router.get("/products", authRequired, getProducts)
 
 router.get("/view-details/:id", getProduct)
 
-//para eliminar tareas se espera un :id
-router.get("/products/:id", authRequired, getProduct)
+//para traer prodcuto 1 se espera un :id OK
+router.get("/add-product/:id", authRequired, getProduct)
 
 //para crear productos, verificar usuario aun 
 router.post("/producto",validateSchema(createProductSchema) , createProduct)
 
-//para eliminar una tares se espera un :id
+//para eliminar producto se espera un :id
 router.delete("/products/:id", authRequired, deleteProduct)
 
-//para actualizar una tarea se espera un :id
+//para actualizar una tarea se espera un :id OKEYYYY
 router.put("/products/:id", authRequired, updateProduct)
 
 //para obteenr las marcas y categorias

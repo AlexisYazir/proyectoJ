@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 function LoginPage() {
     const { register, handleSubmit, formState: { errors }, watch } = useForm();
@@ -13,6 +14,17 @@ function LoginPage() {
 
     useEffect(() => {
         if (loginErrors.length > 0) {
+            loginErrors.forEach(error => {
+                toast.error(error, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            });
             const timer = setTimeout(() => {
                 clearErrors();
             }, 5000);
@@ -29,9 +41,29 @@ function LoginPage() {
         const rol = await signin(data);
         if (rol) {
             if (rol === 'Administrador') {
-                navigate('/dashboard-admin');
+                toast.success('Inicio de sesión exitoso! Bienvenido Administrador', {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                    navigate('/dashboard-admin');
+
             } else if (rol === 'Usuario') {
-                navigate('/dashboard-u');
+                toast.success('Inicio de sesión exitoso! Bienvenido Usuario', {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                    navigate('/dashboard-u');
+
             }
         }
     });
@@ -40,20 +72,12 @@ function LoginPage() {
         <div className="d-flex align-items-center justify-content-center" style={{ backgroundColor: '#fff5eb', minHeight: '100vh' }}>
             <div className="card p-4 shadow" style={{ maxWidth: '450px', borderRadius: '10px', boxShadow: '0 20px 40px rgba(255, 102, 0, 0.2)', transition: 'all 0.3s ease' }}>
                 <h2 className="card-title text-center mb-4">Inicio de Sesión</h2>
-                {loginErrors.length > 0 && loginErrors.map((error, i) => (
-                    <div
-                        className="alert mb-3"
-                        key={i}
-                        style={{ backgroundColor: "#f8d7da", color: "#FF0000" }}>
-                        {error}
-                    </div>
-                ))}
 
                 <form onSubmit={onSubmit}>
                     <div className="mb-3 position-relative">
                         <label htmlFor="username" className="form-label text-custom">Nombre de usuario</label>
                         <div className="input-group">
-                            <span className="input-group-text">
+                            <span className="input-group-text span">
                                 <FontAwesomeIcon icon={faUser} style={{ color: '#db5802' }} />
                             </span>
                             <input id="username" type="text" className="form-control" {...register("username", { required: true })} placeholder='Ingresa tu nombre de usuario' />
@@ -64,7 +88,7 @@ function LoginPage() {
                     <div className="mb-3 position-relative">
                         <label htmlFor="password" className="form-label text-custom">Contraseña</label>
                         <div className="input-group">
-                            <span className="input-group-text">
+                            <span className="input-group-text span">
                                 <FontAwesomeIcon icon={faLock} style={{ color: '#db5802' }} />
                             </span>
                             <input
@@ -78,7 +102,7 @@ function LoginPage() {
                                 })}
                                 placeholder="Ingresa tu contraseña"
                             />
-                            <span className="input-group-text" onClick={() => setShowPassword(!showPassword)} style={{ cursor: 'pointer' }}>
+                            <span className="input-group-text span" onClick={() => setShowPassword(!showPassword)} style={{ cursor: 'pointer' }}>
                                 <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} style={{ color: '#db5802' }} />
                             </span>
                         </div>

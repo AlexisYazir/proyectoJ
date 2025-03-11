@@ -1,6 +1,6 @@
 export const VisionPage = () => {
     return (
-        <div>pagina de mision de la empresa</div>
+        <div>pagina de vision de la empresa</div>
     )
 }
 

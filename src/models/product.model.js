@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema({
     precio: {
         type: Number,
         required: true,
-        min: 0 // Asegura que el precio no sea negativo
+        min: 0 // Evita valores negativos
     },
     categoria: {
         type: String,
@@ -25,39 +25,24 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
-    },    
+    },
     stock: {
         type: Number,
         required: true,
-        min: 0 // Evita valores negativos en el stock
+        min: 0 // Evita valores negativos
     },
-    imagen: {
-        type: String,
-        required: true,
-        trim: true,
-       
-    },
-    // proveedor: [
-    //     {
-    //         nombre_proveedor: {
-    //             type: String,
-    //             required: true,
-    //             trim: true
-    //         },
-    //         telefono: {
-    //             type: String,
-    //             required: true,
-    //             trim: true
-    //         },
-    //         correo: {
-    //             type: String,
-    //             required: true,
-    //             trim: true
-    //         }
-    //     }
-    // ]
+    imagenes: {
+        type: [String], // Almacena un array de URLs como strings
+        required: false, // No es obligatorio
+        validate: {
+            validator: function (arr) {
+                return arr.length >= 1 && arr.length <= 3; // Asegura que haya entre 1 y 3 imágenes
+            },
+            message: 'Debe proporcionar entre 1 y 3 imágenes'
+        }
+    }
 }, {
-    timestamps: true
+    timestamps: true // Agrega createdAt y updatedAt automáticamente
 });
 
 export default mongoose.model('Product', productSchema);

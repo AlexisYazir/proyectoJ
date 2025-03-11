@@ -18,6 +18,9 @@ export const registerSchema = z.object({
     }).email({
         message: 'Ingresa un correo válido'
     }),
+    imagen: z.string({
+        required_error: 'Ocurrio un error al guardar la imagen en la base de datos, intenta nuevamente'
+    }).max(200, { message: 'El máximo es de 200 caracteres para la imagen' }).min(3, { message: 'Ocurrio un error al guardar la imagen en la base de datos, intenta nuevamente' }), // Falta el regex
     password: z.string({
         required_error: 'Llena el campo de contraseña'
     }).max(18, { message: 'El máximo es de 18 caracteres para la contraseña' }).min(8, { message: 'El mínimo es 8 caracteres para la contraseña' }),

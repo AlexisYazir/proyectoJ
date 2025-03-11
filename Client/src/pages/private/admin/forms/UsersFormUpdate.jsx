@@ -1,60 +1,47 @@
-import { useForm } from 'react-hook-form';
 import axios from "axios";
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../../../../context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faEnvelope, faLock, faPhone, faQuestionCircle, faAlignLeft,faImage, faEyeSlash, faEye, faUserShield } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEnvelope, faPhone, faQuestionCircle, faAlignLeft, faImage, faUserShield } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 
-export const UsersFormPage = () => {
+export const UsersFormUpdate = () => {
     const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm();
-    const { createUser, errors: registerErrors = [], clearErrors, getQuestions, questions, getUser, roles, getRoles } = useAuth();
+    const { errors: registerErrors = [], clearErrors, getQuestions, questions, getUser, roles, getRoles, updateUser, getUsers } = useAuth();
     const navigate = useNavigate();
     const params = useParams();
     const [imagenPreview, setImagenPreview] = useState(null);
+    const uploadImage = async (file) => {
+        toast.info('¡Subiendo imagen!', { autoClose: 3000 });
+        const formData = new FormData();
+        formData.append("image", file);
 
-    const [showPassword, setShowPassword] = useState(false);
+        try {
+            const response = await axios.post("https://api.imgbb.com/1/upload", formData, {
+                params: { key: "d585d07902967638dd5a9aa7986dd636" }, // Reemplaza con tu API Key de imgbb
+                headers: { "Content-Type": "multipart/form-data" }
+            });
 
-    // Para validar los criterios de contraseña
-    const [passwordCriteria1, setPasswordCriteria1] = useState({
-        hasUppercase: null,
-        hasLowercase: null,
-        hasNumber: null,
-        hasSpecialChar: null,
-        hasMinLength: null,
-    });
-
-    const [passwordCriteria2, setPasswordCriteria2] = useState({
-        hasUppercase: null,
-        hasLowercase: null,
-        hasNumber: null,
-        hasSpecialChar: null,
-        hasMinLength: null,
-    });
-
-    const validatePassword1 = (password) => {
-        const criteria = {
-            hasUppercase: /[A-Z]/.test(password),
-            hasLowercase: /[a-z]/.test(password),
-            hasNumber: /\d/.test(password),
-            hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-            hasMinLength: password.length >= 8,
-        };
-        setPasswordCriteria1(criteria);
+            return response.data.data.url; // Retorna la URL de la imagen subida
+        } catch (error) {
+            console.error("Error al subir la imagen", error);
+            toast.error("Error al subir la imagen. Revisa tu conexión e intenta nuevamente");
+            return null;
+        }
     };
 
-    const validatePassword2 = (password) => {
-        const criteria = {
-            hasUppercase: /[A-Z]/.test(password),
-            hasLowercase: /[a-z]/.test(password),
-            hasNumber: /\d/.test(password),
-            hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-            hasMinLength: password.length >= 8,
-        };
-        setPasswordCriteria2(criteria);
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImagenPreview(URL.createObjectURL(file)); // Previsualizar imagen
+            const imageUrl = await uploadImage(file);
+            if (imageUrl) {
+                setValue("imagen", imageUrl); // Guardar la URL en el formulario
+            }
+        }
     };
-
 
     // Obtener las preguntas 
     useEffect(() => {
@@ -68,24 +55,21 @@ export const UsersFormPage = () => {
 
     useEffect(() => {
         async function loadUser() {
-            if (params.id && roles.length  > 0) {
+            if (params.id && roles.length > 0) {
                 const produ = await getUser(params.id);
                 if (produ) {
                     setValue('username', produ.username);
                     setValue('name', produ.name);
                     setValue('apellidoP', produ.apellidoP);
                     setValue('telefono', produ.telefono);
-                    setValue('telefono', produ.telefono);
                     setValue('email', produ.email);
-                    setValue('pregunta', produ.pregunta);
-                    setValue('respuesta', produ.recuperacion_contrasena.respuesta);
-                    setValue('password', produ.password);
-                    setValue('password2', produ.password);
+                    setValue('respuesta', produ.recuperacion_contrasena[0]?.respuesta || '');
+                    setValue('pregunta', produ.recuperacion_contrasena[0]?.pregunta || '');
+                    setValue('rol', produ.rol);
 
-                    // Buscar la marca en el array de marcas
-                    const marcaEncontrada = roles.find(m => m.roles === produ.rol);
-                    if (marcaEncontrada) {
-                        setValue('rol', marcaEncontrada.rol); // Usar marca.marca
+                    if (produ.imagen) {  // Si el usuario tiene una imagen guardada
+                        setImagenPreview(produ.imagen); // Mostrar la imagen actual
+                        setValue('imagen', produ.imagen); // Guardar la URL en el formulario
                     }
                 }
             }
@@ -121,59 +105,43 @@ export const UsersFormPage = () => {
         return () => subscription.unsubscribe();
     }, [watch, clearErrors]);
 
-    const uploadImage = async (file) => {
-        const formData = new FormData();
-        formData.append("image", file);
-    
-        try {
-            const response = await axios.post("https://api.imgbb.com/1/upload", formData, {
-                params: { key: "d585d07902967638dd5a9aa7986dd636" }, // Reemplaza con tu API Key de imgbb
-                headers: { "Content-Type": "multipart/form-data" }
-            });
-    
-            return response.data.data.url; // Retorna la URL de la imagen subida
-        } catch (error) {
-            console.error("Error al subir la imagen", error);
-            toast.error("Error al subir la imagen. Revisa tu conexión e intenta nuevamente");
-            return null;
-        }
-    };
-    
-    const handleImageChange = async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImagenPreview(URL.createObjectURL(file)); // Previsualizar imagen
-            const imageUrl = await uploadImage(file);
-            if (imageUrl) {
-                setValue("imagen", imageUrl); // Guardar la URL en el formulario
-            }
-        }
-    };
-    
+    //pa registrar wl usuario
     const onSubmit = handleSubmit(async (values) => {
         try {
-            toast.info('¡Subiendo imagen!', { autoClose: 3000 });
-    
             // Verificar si hay una imagen seleccionada
             if (values.imageFile) {
+                
                 const imageUrl = await uploadImage(values.imageFile);
                 if (!imageUrl) return; // Detener si la imagen no se subió correctamente
                 values.imagen = imageUrl; // Agregar la URL de la imagen a los valores del formulario
+            }  else {
+                values.imagen = imagenPreview; // Mantener la imagen actual si no se subió una nueva
             }
-    
+
             // Esperar 3 segundos antes de continuar (opcional)
             await new Promise((resolve) => setTimeout(resolve, 3000));
-    
-            // Registrar al usuario
-            const success = await createUser(values);
-            if (success) {
-                toast.success('¡Registro exitoso!', { autoClose: 3000 });
-                setTimeout(() => navigate('/catalog-users'), 3000);
+            if (params.id) {
+                const success = await updateUser(params.id, values);
+                if (success) {
+                    toast.success('Usuario actualizado exitosamente!', {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    getUsers();
+                    navigate('/catalog-users');
+                }
             }
         } catch (error) {
-            toast.error("Error al subir la imagen o registrar usuario");
-            console.error(error);
+            console.log(error);
+            toast.error("Ocurrio un error inesperado. Intenta nuevamente"   );
+            navigate('/catalog-users');
         }
+
     });
 
     return (
@@ -181,14 +149,8 @@ export const UsersFormPage = () => {
             <div className="card-admin">
                 <div className="row g-0">
                     <div className="col-md-12 p-4">
-                        <h2 className="card-title text-center mb-4">Registro de Usuarios</h2>
-                        <p className="subtitle-admin mb-4 text-center">Registra un nuevo usuario en la página</p>
-                        {/* {registerErrors.length > 0 && registerErrors.map((error, i) => (
-                            <div className="alert mb-3" key={i} style={{ backgroundColor: "#f8d7da", color: "#c23616" }}>
-                                {error}
-                            </div>
-                        ))} */}
-
+                        <h2 className="card-title text-center mb-4">Actualizacion de Usuario</h2>
+                        <p className="subtitle-admin mb-4 text-center">Actualiza los datos de este usuario</p>
                         <form className="row g-4" onSubmit={onSubmit}>
                             {/* Input nombre usuario */}
                             <div className="col-md-6">
@@ -289,107 +251,6 @@ export const UsersFormPage = () => {
                                     </div>
                                 )}
                             </div>
-
-                            {/* Input de contraseña */}
-                            <div className="col-md-6">
-                                <label htmlFor="password" className="form-label text-custom">Contraseña</label>
-                                <div className="input-group">
-                                    <span className="input-group-text span">
-                                        <FontAwesomeIcon icon={faLock} style={{ color: '#db5802' }} />
-                                    </span>
-                                    <input
-                                        id="password"
-                                        type={showPassword ? "text" : "password"}
-                                        className="form-control form-control-admin"
-                                        {...register("password", {
-                                            required: true,
-                                            validate: (value) => validatePassword1(value)
-                                        })}
-                                        placeholder="Ingrese una contraseña"
-                                        onChange={(e) => validatePassword1(e.target.value)}
-                                    />
-                                    <span
-                                        className="input-group-text span"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} style={{ color: '#db5802' }} />
-                                    </span>
-                                </div>
-                                {errors.password && (
-                                    <div className="mt-1" style={{ color: '#FF0000', fontWeight: 600, paddingTop: 0 }}>
-                                        Este campo es obligatorio.
-                                    </div>
-                                )}
-                                <div id="passwordCriteria1" className="mt-2">
-                                    <p className={`criteria ${passwordCriteria1.hasUppercase === null ? 'text-muted' : passwordCriteria1.hasUppercase ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria1.hasUppercase === null ? 'Debe contener una mayúscula' : passwordCriteria1.hasUppercase ? '✔ Una mayúscula' : '❌ Una mayúscula'}
-                                    </p>
-                                    <p className={`criteria ${passwordCriteria1.hasLowercase === null ? 'text-muted' : passwordCriteria1.hasLowercase ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria1.hasLowercase === null ? 'Debe contener una minúscula' : passwordCriteria1.hasLowercase ? '✔ Una minúscula' : '❌ Una minúscula'}
-                                    </p>
-                                    <p className={`criteria ${passwordCriteria1.hasNumber === null ? 'text-muted' : passwordCriteria1.hasNumber ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria1.hasNumber === null ? 'Debe contener un número' : passwordCriteria1.hasNumber ? '✔ Un número' : '❌ Un número'}
-                                    </p>
-                                    <p className={`criteria ${passwordCriteria1.hasSpecialChar === null ? 'text-muted' : passwordCriteria1.hasSpecialChar ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria1.hasSpecialChar === null ? 'Debe contener un carácter especial' : passwordCriteria1.hasSpecialChar ? '✔ Un carácter especial' : '❌ Un carácter especial'}
-                                    </p>
-                                    <p className={`criteria ${passwordCriteria1.hasMinLength === null ? 'text-muted' : passwordCriteria1.hasMinLength ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria1.hasMinLength === null ? 'Debe tener al menos 8 caracteres' : passwordCriteria1.hasMinLength ? '✔ Al menos 8 caracteres' : '❌ Al menos 8 caracteres'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Input para confirmar contraseña */}
-                            <div className="col-md-6">
-                                <label htmlFor="password2" className="form-label text-custom">Confirma contraseña</label>
-                                <div className="input-group">
-                                    <span className="input-group-text span">
-                                        <FontAwesomeIcon icon={faLock} style={{ color: '#db5802' }} />
-                                    </span>
-                                    <input
-                                        id="password2"
-                                        type={showPassword ? "text" : "password"}
-                                        className="form-control form-control-admin"
-                                        {...register("password2", {
-                                            required: true,
-                                            validate: (value) => validatePassword2(value)
-                                        })}
-                                        placeholder="Confirme contraseña"
-                                        onChange={(e) => validatePassword2(e.target.value)}
-                                    />
-                                    <span
-                                        className="input-group-text span"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} style={{ color: '#db5802' }} />
-                                    </span>
-                                </div>
-                                {errors.password2 && (
-                                    <div className="mt-1" style={{ color: '#FF0000', fontWeight: 600, paddingTop: 0 }}>
-                                        Este campo es obligatorio.
-                                    </div>
-                                )}
-                                <div id="passwordCriteria2" className="mt-2">
-                                    <p className={`criteria ${passwordCriteria2.hasUppercase === null ? 'text-muted' : passwordCriteria2.hasUppercase ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria2.hasUppercase === null ? 'Debe contener una mayúscula' : passwordCriteria2.hasUppercase ? '✔ Una mayúscula' : '❌ Una mayúscula'}
-                                    </p>
-                                    <p className={`criteria ${passwordCriteria2.hasLowercase === null ? 'text-muted' : passwordCriteria2.hasLowercase ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria2.hasLowercase === null ? 'Debe contener una minúscula' : passwordCriteria2.hasLowercase ? '✔ Una minúscula' : '❌ Una minúscula'}
-                                    </p>
-                                    <p className={`criteria ${passwordCriteria2.hasNumber === null ? 'text-muted' : passwordCriteria2.hasNumber ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria2.hasNumber === null ? 'Debe contener un número' : passwordCriteria2.hasNumber ? '✔ Un número' : '❌ Un número'}
-                                    </p>
-                                    <p className={`criteria ${passwordCriteria2.hasSpecialChar === null ? 'text-muted' : passwordCriteria2.hasSpecialChar ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria2.hasSpecialChar === null ? 'Debe contener un carácter especial' : passwordCriteria2.hasSpecialChar ? '✔ Un carácter especial' : '❌ Un carácter especial'}
-                                    </p>
-                                    <p className={`criteria ${passwordCriteria2.hasMinLength === null ? 'text-muted' : passwordCriteria2.hasMinLength ? 'text-success' : 'text-danger'}`}>
-                                        {passwordCriteria2.hasMinLength === null ? 'Debe tener al menos 8 caracteres' : passwordCriteria2.hasMinLength ? '✔ Al menos 8 caracteres' : '❌ Al menos 8 caracteres'}
-                                    </p>
-                                </div>
-                            </div>
-
                             {/* Input pregunta secreta */}
                             <div className="col-md-6">
                                 <label htmlFor="pregunta" className="form-label text-custom">Elije una pregunta secreta</label>
@@ -412,7 +273,7 @@ export const UsersFormPage = () => {
                                     </div>
                                 )}
                             </div>
-                             
+
 
                             {/* Input RESPUESTA*/}
                             <div className="col-md-6">
@@ -441,11 +302,15 @@ export const UsersFormPage = () => {
                                         onChange={handleImageChange} />
                                 </div>
                                 {errors.imagen && <div className="text-danger mt-1">Este campo es obligatorio.</div>}
-                                {imagenPreview && <img src={imagenPreview} alt="Preview" className="mt-2 img-thumbnail" style={{ maxWidth: "150px" }} />}
-                            </div>
 
+                                {/* Mostrar la imagen actual o la imagen seleccionada */}
+                                {imagenPreview && (
+                                    <img src={imagenPreview} alt="Foto de Perfil" className="mt-2 img-thumbnail"
+                                        style={{ maxWidth: "150px" }} />
+                                )}
+                            </div>
                             <div className="col-12 d-flex justify-content-center gap-2">
-                                <button className="btn btn-custom-cancel text-white" type="submit">Registrar</button>
+                                <button className="btn btn-custom-cancel text-white" type="submit">Guardar</button>
                                 <Link to="/catalog-users" className="btn btn-custom text-white">Cancelar</Link>
                             </div>
                         </form>
@@ -456,4 +321,4 @@ export const UsersFormPage = () => {
     );
 }
 
-export default UsersFormPage;
+export default UsersFormUpdate;

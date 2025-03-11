@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useProducts } from "../../../../context/ProductsContext";
+import Alert from "../../../../components/Alert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faEdit, faTrash, faEye } from "@fortawesome/free-solid-svg-icons";
 import ReactPaginate from "react-paginate";
+import { Link } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 export const ProductCatalog = () => {
-    const { getProducts, products } = useProducts();
+    const { getProducts, products, deleteProduct } = useProducts();
     const [currentPage, setCurrentPage] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
-    const itemsPerPage = 4;
+    const itemsPerPage = 5;
 
     useEffect(() => {
         getProducts();
@@ -27,6 +30,31 @@ export const ProductCatalog = () => {
 
     const handlePageChange = (selectedPage) => {
         setCurrentPage(selectedPage.selected);
+    };
+
+    // Eliminar producto
+    const handleDeleteProduct = (productId) => {
+        toast(
+            <Alert
+                message="¿Está seguro de eliminar este producto?"
+                onConfirm={() => {
+                    deleteProduct(productId);
+                    toast.dismiss();
+                    if (currentProducts.length <= 1 && currentPage > 0) {
+                        setCurrentPage(currentPage - 1);
+                    }
+                }}
+                onCancel={() => {
+                    toast.dismiss(); // Cierra la notificación después de cancelar
+                }}
+            />,
+            {
+                position: "top-right",
+                autoClose: false, // Desactiva el cierre
+                closeButton: false,
+                draggable: false, // Desactiva el arrastre
+            }
+        );
     };
 
     return (
@@ -54,12 +82,9 @@ export const ProductCatalog = () => {
                     <table className="table table-bordered rounded text-center">
                         <thead className="table-dark">
                             <tr>
-                                <th className="d-none d-md-table-cell">ID</th>
                                 <th>Nombre</th>
                                 <th>Precio</th>
                                 <th className="d-none d-md-table-cell">Stock</th>
-                                <th>Marca</th>
-                                <th className="d-none d-md-table-cell">Categoría</th>
                                 <th>Imagen</th>
                                 <th>Acciones</th>
                             </tr>
@@ -67,15 +92,12 @@ export const ProductCatalog = () => {
                         <tbody>
                             {currentProducts.map((product) => (
                                 <tr key={product._id}>
-                                    <td className="d-none d-md-table-cell">{product._id}</td>
                                     <td>{product.nombre_producto}</td>
                                     <td>${product.precio}</td>
                                     <td className="d-none d-md-table-cell">{product.stock}</td>
-                                    <td>{product.marca}</td>
-                                    <td className="d-none d-md-table-cell">{product.categoria}</td>
                                     <td>
                                         <img
-                                            src={product.imagen}
+                                            src={product.imagenes[0]}
                                             alt={product.nombre_producto}
                                             className="img-fluid rounded"
                                             style={{ width: "50px", height: "50px", objectFit: "cover" }}
@@ -83,10 +105,10 @@ export const ProductCatalog = () => {
                                     </td>
                                     <td>
                                         <div className="d-flex justify-content-center gap-2">
-                                            <button className="btn btn-warning btn-sm">
-                                                <FontAwesomeIcon icon={faEdit} />
-                                            </button>
-                                            <button className="btn btn-danger btn-sm">
+                                            <Link to={`/view-details/${product._id}`} className="btn btn-success btn-sm"><FontAwesomeIcon icon={faEye} /></Link>
+                                            <Link to={`/add-product/${product._id}`} className="btn btn-primary btn-sm"><FontAwesomeIcon icon={faEdit} /></Link>
+
+                                            <button className="btn btn-danger btn-sm" onClick={() => handleDeleteProduct(product._id)}>
                                                 <FontAwesomeIcon icon={faTrash} />
                                             </button>
                                         </div>

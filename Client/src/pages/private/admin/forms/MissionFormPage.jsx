@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useCompany } from '../../../../context/CompanyContext';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAlignLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -29,14 +29,14 @@ export const MissionFormPage = () => {
     const onSubmit = handleSubmit(async (values) => {
         const success = await createMisionVision(values); // Intenta registrar al usuario
         if (success) {
-            navigate('/add-mv'); // Redirige al login solo si el registro fue exitoso
+            navigate('/dashboard-admin'); // Redirige al login solo si el registro fue exitoso
         }
     });
 
     return (
         <div className="d-flex align-items-center justify-content-center" style={{ backgroundColor: '#fff5eb', minHeight: '100vh' }}>
             <div className="card p-4 shadow" style={{ maxWidth: '450px', minHeight: 'auto', borderRadius: '10px', boxShadow: '0 20px 40px rgba(255, 102, 0, 0.2)', transition: 'all 0.3s ease' }}>
-                <h2 className="card-title text-center mb-4">Registro Misión Visión</h2>
+                <h2 className="card-title text-center mb-4">Actualizar Misión o Visión</h2>
                 {missionErrors.length > 0 && missionErrors.map((error, i) => (
                     <div
                         className="alert mb-3"
@@ -80,7 +80,7 @@ export const MissionFormPage = () => {
 
                     <div className="d-flex justify-content-center gap-2">
                         <button className="btn btn-custom-cancel text-white" type="submit">Guardar</button>
-                        <button className="btn btn-custom text-white" type="reset">Cancelar</button>
+                        <Link to="/catalog-vision" className="btn btn-custom text-white">Cancelar</Link>
                     </div>
                 </form>
             </div>

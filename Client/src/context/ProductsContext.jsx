@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
-import { getProductsRequest, getViewDetails, createProductRequest, getMarcasRequest, getCategoriasRequest } from "../api/products";
+import { getProductsRequest, getProductRequest, getViewDetails, updateProductRequest, createProductRequest, deleteProductRequest, getMarcasRequest, getCategoriasRequest } from "../api/products";
+import PropTypes from 'prop-types';
 
 const ProductContext = createContext();
 
@@ -15,7 +16,7 @@ export const useProducts = () => {
 
 export function ProductProvider({ children }) {
     const [products, setProducts] = useState([]);
-    const [productDetails, setProductDetails] = useState(null); 
+    const [productDetails, setProductDetails] = useState(null);
     const [errors, setErrors] = useState([]);
 
     const createProduct = async (productData) => {
@@ -25,12 +26,22 @@ export function ProductProvider({ children }) {
             setErrors([]); // Limpiar errores en caso de éxito
             return true;
         } catch (error) {
-            setErrors([error.response.data]);
-            console.error("Error al crear el producto:", error);
+            setErrors(error.response.data);
+            // console.error("Error al crear el producto:", error);
             return false;
         }
     };
-    
+
+    const deleteProduct = async (id) => {
+        try {
+            const res = await deleteProductRequest(id)
+            if (res.status === 204) setProducts(products.filter(producto => producto._id !== id))
+        } catch (error) {
+            console.log(error);
+        }
+
+    };
+
     const getProducts = async () => {
         try {
             const res = await getProductsRequest();
@@ -39,6 +50,17 @@ export function ProductProvider({ children }) {
             console.log(error);
         }
     };
+
+    const updateProduct = async (id, product) => {
+        try {
+            await updateProductRequest(id, product)
+            return true;
+        } catch (error) {
+            setErrors(error.response.data);
+            // console.error("Error al crear el producto:", error);
+            return false;
+        }
+    }
 
     const [marcas, setMarcas] = useState([]);
 
@@ -74,13 +96,26 @@ export function ProductProvider({ children }) {
         }
     };
 
+    //para traer los datos al form de actualizar producto
+    const getProduct = async (id) => {
+        try {
+            const res = await getProductRequest(id)
+            return res.data
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const clearErrors = () => {
         setErrors([]);
     };
 
     return (
-        <ProductContext.Provider value={{errors,clearErrors, getProducts, products, getDetails, productDetails, createProduct, getCategorias, categorias, getMarcas, marcas }}>
+        <ProductContext.Provider value={{ errors, getProduct, updateProduct, clearErrors, deleteProduct, getProducts, products, getDetails, productDetails, createProduct, getCategorias, categorias, getMarcas, marcas }}>
             {children}
         </ProductContext.Provider>
     );
 }
+ProductProvider.propTypes = {
+    children: PropTypes.node, // `node` acepta cualquier cosa que pueda ser renderizada en React
+};

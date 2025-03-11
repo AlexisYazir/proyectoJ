@@ -14,7 +14,7 @@ function ProfilePage() {
         password: "",
     });
 
-    const [profileImage, setProfileImage] = useState(user?.profileImage || "../../../public/error-404.jpg");
+    const [profileImage, setProfileImage] = useState(user?.imagen || "../../../public/error-404.jpg");
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
@@ -123,7 +123,7 @@ function ProfilePage() {
 
                     {/* Imagen de Perfil */}
                     <div className="col-md-4 bg-light p-4 d-flex flex-column align-items-center justify-content-center">
-                        <img src={profileImage} alt="Foto de perfil" className="image-preview mb-3" style={{ width: "150px", height: "150px", borderRadius: "50%", objectFit: "cover" }} />
+                        <img src={profileImage} alt="Foto de perfil" className="image-preview mb-3" style={{ width: "200px", height: "200px", borderRadius: "50%", objectFit: "cover" }} />
                         <div className="upload-btn-wrapper">
                             <label className="btn btn-custom-cancel text-white w-100">
                                 <i className="bi bi-camera me-2"></i>Cambiar Foto

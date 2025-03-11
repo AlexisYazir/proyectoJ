@@ -18,3 +18,12 @@ export const getRolesRequest = () => axios.get("/roles")
 //para obtener los usuarios
 export const getUsersRequest = () => axios.get("/users")
 
+//para eliminar los usuarios
+export const deleteUserRequest = (id) => axios.delete(`user/${id}`)
+
+//para consultar el back y consulultar los datos de un usuario OK
+export const getUserRequest = (id) => axios.get(`/add-users/${id}`)
+
+//OK
+export const updateUserRequest = (id, product) => axios.put(`/users/${id}`, product)
+

@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { registerRequest, loginRequest, verityTokenRequet, getQuestionsRequest, createUserRequest, getRolesRequest, getUsersRequest } from '../api/auth';
+import { registerRequest, loginRequest, getUserRequest, updateUserRequest, verityTokenRequet, deleteUserRequest, getQuestionsRequest, createUserRequest, getRolesRequest, getUsersRequest } from '../api/auth';
 import Cookies from 'js-cookie';
+import PropTypes from 'prop-types';
 
 export const AuthContext = createContext();
 
@@ -22,13 +23,23 @@ export const AuthProvider = ({ children }) => {
         try {
             const res = await registerRequest(user);
             setUser(res.data);
-            Cookies.set('user', JSON.stringify(res.data)); 
             return true; // Registro exitoso
         } catch (error) {
             setErrors(error.response.data);
             return false; // Hubo un error
         }
     };
+
+
+    //para traer los datos al form de actualizar producto
+    const getUser = async (id) => {
+        try {
+            const res = await getUserRequest(id)
+            return res.data
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const signin = async (user) => {
         try {
@@ -48,13 +59,24 @@ export const AuthProvider = ({ children }) => {
     const createUser = async (user) => {
         try {
             await createUserRequest(user); //solo se ejecuta la funcionpara poder crear el usuario, el await es importante señorwersegwfqd
-            await getUsers(); 
+            await getUsers();
             return true;
         } catch (error) {
             setErrors(error.response.data);
             return false; // Hubo un error
         }
     };
+
+    const updateUser = async (id, user) => {
+        try {
+            await updateUserRequest(id, user)
+            return true;
+        } catch (error) {
+            setErrors(error.response.data);
+            // console.error("Error al crear el producto:", error);
+            return false;
+        }
+    }
 
     const logout = () => {
         Cookies.remove('token');
@@ -84,7 +106,7 @@ export const AuthProvider = ({ children }) => {
             setRoles(res.data);
             return res.data;
         } catch (error) {
-            console.error("Error al obtener las preguntas:", error);
+            console.error("Roles Error fssd xd:", error);
             return [];
         }
     };
@@ -99,6 +121,15 @@ export const AuthProvider = ({ children }) => {
             console.log(error);
             return [];
         }
+    };
+    const deleteUser = async (id) => {
+        try {
+            const res = await deleteUserRequest(id)
+            if (res.status === 204) setUsers(users.filter(user => user._id !== id))
+        } catch (error) {
+            console.log(error);
+        }
+
     };
 
     // Funcion para limpiar errores
@@ -135,8 +166,12 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ signup, signin, user, users, logout, isAuthenticated, errors, loading, clearErrors, getQuestions, questions, createUser, roles, getRoles, getUsers }}>
+        <AuthContext.Provider value={{ signup, updateUser, signin, user, users, deleteUser, logout, getUser, isAuthenticated, errors, loading, clearErrors, getQuestions, questions, createUser, roles, getRoles, getUsers }}>
             {children}
         </AuthContext.Provider>
     );
+};
+
+AuthProvider.propTypes = {
+    children: PropTypes.node, // `node` acepta cualquier cosa que pueda ser renderizada en React
 };

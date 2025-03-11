@@ -112,7 +112,7 @@ export function Navbar() {
                                         title={<span style={{ color: "white" }}>Productos</span>}
                                         id="gestion-dropdown"
                                         className="btn btn-custom text-white mx-2 nav-dropdown"
-                                        onMouseEnter={(e) => e.stopPropagation()} 
+                                        onMouseEnter={(e) => e.stopPropagation()}
                                         show
                                     >
                                         <NavDropdown.Item as={Link} to="/add-product" className="text-white">Agregar</NavDropdown.Item>
@@ -122,7 +122,7 @@ export function Navbar() {
                                         title={<span style={{ color: "white" }}>Politicas</span>}
                                         id="gestion-dropdown"
                                         className="btn btn-custom text-white mx-2 nav-dropdown"
-                                        onMouseEnter={(e) => e.stopPropagation()} 
+                                        onMouseEnter={(e) => e.stopPropagation()}
                                         show
                                     >
                                         <NavDropdown.Item as={Link} to="/add-policies" className="text-white">Agregar</NavDropdown.Item>
@@ -132,7 +132,7 @@ export function Navbar() {
                                         title={<span style={{ color: "white" }}>Misión/Visión</span>}
                                         id="gestion-dropdown"
                                         className="btn btn-custom text-white mx-2 nav-dropdown"
-                                        onMouseEnter={(e) => e.stopPropagation()} 
+                                        onMouseEnter={(e) => e.stopPropagation()}
                                         show
                                     >
                                         <NavDropdown.Item as={Link} to="/add-mv" className="text-white">Agregar</NavDropdown.Item>
@@ -142,7 +142,7 @@ export function Navbar() {
                                         title={<span style={{ color: "white" }}>Usuarios</span>}
                                         id="gestion-dropdown"
                                         className="btn btn-custom text-white mx-2 nav-dropdown"
-                                        onMouseEnter={(e) => e.stopPropagation()} 
+                                        onMouseEnter={(e) => e.stopPropagation()}
                                         show
                                     >
                                         <NavDropdown.Item as={Link} to="/add-users" className="text-white">Agregar</NavDropdown.Item>
@@ -161,7 +161,7 @@ export function Navbar() {
                                         title={<span style={{ color: "white" }}>IoT</span>}
                                         id="gestion-dropdown"
                                         className="btn btn-custom text-white mx-2 nav-dropdown"
-                                        onMouseEnter={(e) => e.stopPropagation()} 
+                                        onMouseEnter={(e) => e.stopPropagation()}
                                         show
                                     >
                                         <NavDropdown.Item as={Link} to="/control" className="text-white">Control</NavDropdown.Item>
@@ -176,9 +176,30 @@ export function Navbar() {
                             <>
                                 {/* /PANTALLA GRANDE VISITANTES SIN SESION*/}
                                 <Nav.Link as={Link} to="/home" className="btn btn-custom text-white mx-2">Inicio</Nav.Link>
-                                <Nav.Link as={Link} to="/mission" className="btn btn-custom text-white mx-2">Acerca de</Nav.Link>
-                                <Nav.Link as={Link} to="/policies" className="btn btn-custom text-white mx-2">Politicas</Nav.Link>
                                 <Nav.Link as={Link} to="/catalog" className="btn btn-custom text-white mx-2">Catálogo</Nav.Link>
+                                <NavDropdown
+                                    title={<span style={{ color: "white" }}>Acerca de</span>}
+                                    id="gestion-dropdown"
+                                    className="btn btn-custom text-white mx-2 nav-dropdown"
+                                    onMouseEnter={(e) => e.stopPropagation()}
+                                    show
+                                >
+                                    <NavDropdown.Item as={Link} to="/mission" className="text-white">Misión</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to="/vision" className="text-white">Visión</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to="/contact" className="text-white">Contacto</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to="/location" className="text-white">Ubicación</NavDropdown.Item>
+                                </NavDropdown>
+                                <NavDropdown
+                                    title={<span style={{ color: "white" }}>Politicas</span>}
+                                    id="gestion-dropdown"
+                                    className="btn btn-custom text-white mx-2 nav-dropdown"
+                                    onMouseEnter={(e) => e.stopPropagation()}
+                                    show
+                                >
+                                    <NavDropdown.Item as={Link} to="/policies" className="text-white">Politicas de privacidad</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to="/" className="text-white">Preguntas frecuentes</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to="/" className="text-white">Terminos y condiciones</NavDropdown.Item>
+                                </NavDropdown>
                                 <Nav.Link as={Link} to="/login" className="btn btn-custom-cancel text-white mx-2">Perfil</Nav.Link>
                                 <Nav.Link as={Link} to="/register" className="btn btn-custom-cancel text-white mx-2">Registro</Nav.Link>
                             </>

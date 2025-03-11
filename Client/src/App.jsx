@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 //import de rutas publicas
 import RegisterPage from './pages/public/RegisterPage';
@@ -30,9 +32,9 @@ import DashboardAdminPage from './pages/private/admin/DashboardAdminPage';
 // -->    Sus rutas admin
 import ProductFormPage from './pages/private/admin/forms/ProductsFormPage';
 import PoliciesFormPage from './pages/private/admin/forms/PoliciesFormPage';
-import VisionFormPage from './pages/private/admin/forms/VisionFormPage';
 import MisionFormPage from './pages/private/admin/forms/MissionFormPage';
 import UsersFormPage from './pages/private/admin/forms/UsersFormPage';
+import UsersFormUpdate from './pages/private/admin/forms/UsersFormUpdate';
 //atalogos para el administrador
 import MissionCatalog from './pages/private/admin/catalogs/MissionCatalog';
 import VisionCatalog from './pages/private/admin/catalogs/VisionCatalog';
@@ -61,6 +63,7 @@ function App() {
               <main>
                 <Navbar />
                 <Routes>
+                <Route path='/' element={<HomePage />} />
                   <Route path='/home' element={<HomePage />} />
                   <Route path='/login' element={<LoginPage />} />
                   <Route path='/register' element={<RegisterPage />} />
@@ -96,10 +99,13 @@ function App() {
                     <Route path='/404' element={< NotFound />} />
 
                     <Route path='/add-product' element={<ProductFormPage />} />
+                    {/* PARA PODER USAR LA RUTA DE ACTUALIZACION */}
+                    <Route path='/add-product/:id' element={<ProductFormPage />} />
                     <Route path='/add-policies' element={<PoliciesFormPage />} />
-                    <Route path='/add-vision' element={<VisionFormPage />} />
                     <Route path='/add-mv' element={<MisionFormPage />} />
+                    {/* PARA PODER USAR LA RUTA DE ACTUALIZACION DE USUARIO */}
                     <Route path='/add-users' element={<UsersFormPage />} />
+                    <Route path='/add-users/:id' element={<UsersFormUpdate />} />
                     
                     <Route path='/catalog-mission' element={<MissionCatalog />} />
                     <Route path='/catalog-vision' element={<VisionCatalog />} />
@@ -110,6 +116,7 @@ function App() {
                 </Routes>
               </main>
               <Footer />
+              <ToastContainer />
             </div>
           </BrowserRouter>
           </CompanyProvider>

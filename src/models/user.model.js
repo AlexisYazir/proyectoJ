@@ -10,13 +10,11 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
         trim: true
     },
     apellidoP: {
         type: String,
         required: true,
-        unique: true,
         trim: true
     },
     telefono: {
@@ -31,6 +29,12 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },    
+    imagen: {
+        type: String,
+        required: false,
+        unique: true,
+        trim: true
+    },  
     password: {
         type: String,
         required: true
